@@ -3,7 +3,7 @@ This repository is a work for the RAPID project at CRIS LAB.
 
 # Installing and running (Ubuntu 16.04)
 
-## Install ROS Melodic
+## Install ROS Kinetic
 [http://wiki.ros.org/kinetic/Installation/Ubuntu]
 
 'sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
