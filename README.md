@@ -1,162 +1,52 @@
-# RAPID-Team_CRIS_UL
-This repository is a work for the RAPID project at CRIS LAB.
-
-# Installing and running (Ubuntu 16.04)
-
-## Install ROS Kinetic, DJI OSDK
-[http://wiki.ros.org/kinetic/Installation/Ubuntu]
-
-'sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-
-'sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654'
-
-`sudo apt install ros-kinetic-desktop-full`
-
-`echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc`
-
-`source ~/.bashrc`
-
-`sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential python-catkin-tools`
-
-`sudo rosdep init`
-
-`rosdep update`
-
-
-## Install dependencies
-
-`sudo apt install ros-kinetic-nav-msgs`
-
-`sudo apt install ros-kinetic-image-transport`
-
-`sudo apt install ros-kinetic-urg-node`
-
-`sudo apt install ros-kinetic-nmea-msgs`
-
-`sudo apt install ros-kinetic-message-to-tf`
-
-`sudo apt install ros-kinetic-rosserial`
-
-`sudo apt install ros-kinetic-rosserial-arduino`
-
-`sudo apt install ros-kinetic-robot-localization`
-
-`sudo apt install v4l-utils`
-
-## Install OpenCV
-
-Tested and run with opencv 4.2.0 (should work with opencv > 3.3)
-
-
-
-## Instal DJI SDK
-
-Clone repository branch 
-
-`git clone https://github.com/dji-sdk/Onboard-SDK.git`
-
-Compile and install 
-
-`cd Onboard-SDK`
-
-`mkdir build && cd build`
-
-`cmake ..`
-
-`make`
-
-`sudo make -j7 install`
-
-nema-comms
-$sudo apt install ros-{release}-nmea-comms
-
-note:we only test on kinetic,but it should be support on other version.
-
-ffmpeg
-$sudo apt install ffmpeg
-
-libusb-1.0-0-dev
-$sudo apt install libusb-1.0-0-dev
-
-libsdl2-dev
-$sudo apt install libsdl2-dev
-
-`sudo ldconfig`
-
-`sudo usermod -a -G dialout $USER`
-
-Log in and out and DJI SDK is ready to go
-
-## Setting up the ROS ws
-
-`mkdir -p ~/ROS/DJI_OSDK_ws/src`
-
-`catkin_init_workspace`
-
-`cd ..`
-
-`catkin init`
-
-`catkin build`
-
-`echo "source ~/ROS/DJI_OSDK_ws/devel/setup.bash" >> ~/.bashrc`
-
-`source ~/.bashrc`
-
-## Install OpenCV
-
-opencv3.x
-We use OpenCV to show images from camera stream. Download and install instructions can be found at: http://opencv.org. Tested with OpenCV 3.3.0.Suggest using 3.3.0+.
-
-## Fixing usb cam
-
-`cd ~/ROS/DJI_OSDK_ws/src`
-
-`git clone https://github.com/ros-drivers/usb_cam.git`
-
-Open `usb_cam/src/usb_cam.cpp` and add:
-`av_log_set_level(AV_LOG_ERROR);`
-to line 376
-
-This fixes the following warning beeing spammed to the console:
-`[swscaler @ 0x564625b66b60] deprecated pixel format used, make sure you did set range correctly`
-
-## Teensy UDEV rules
-Add the file: `49-teensy.rules` to the udev folder : `/etc/udev/rules.d/` and add the following content to it:
-
-[https://www.pjrc.com/teensy/49-teensy.rules]
-
-
-## Python
-
-`pip install pandas`
-
-`pip install scikit-image`
-
-
-## Edit the launch file and enter your App ID, Key, Baudrate and Port name in the designated places.
-(note:there are two launch file.
-dji_sdk_node.launch is for dji_sdk_node.(3.8.1's interface)
-dji_vehicle_node is for dji_vehicle_node(4.1.0's interface))
-
-$rosed dji_osdk_ros dji_sdk_node.launch
-$rosed dji_osdk_ros dji_vehicle_node.launch
-
-Remember to add UserConfig.txt to correct path.(in the current work directory)
-
-If you want to run dji_sdk_node.launch, you need to put UserConfig.txt into /home/{user}/.ros. dji_vehicle_node.launch does not need UserConfig.txt.
-
-Running the Samples
-1.Start up the dji_osdk_ros ROS node.
-if you want to use OSDK ROS 4.1.0's services and topics:
-
-$roslaunch dji_osdk_ros dji_vehicle_node.launch
-
-if you want to adapt to OSDK ROS 3.8.1's services and topics:
-
-$roslaunch dji_osdk_ros dji_sdk_node.launch
-
-2.Open up another terminal and cd to your catkin_ws location, and start up a sample (e.g. flight control sample).
-
-$source devel/setup.bash
-$rosrun dji_osdk_ros flight_control_node
+# Gudiance-SDK-ROS
+The official ROS package of Guidance SDK for 32/64 bit Ubuntu and XU3.
+
+- We write the CMakeLists.txt file so that it automatically detects your operating system and choose the appropriate library file.
+- We suppose the users are using USB for Guidance SDK on ROS. To use UART for Guidance SDK, plese reference [uart_example](https://github.com/dji-sdk/GuidanceSDK/tree/master/examples/uart_example).
+
+# How to use
+1. Setup USB devide rules so that no root privilege is required when using Guidance SDK via USB.
+		
+		sudo sh -c 'echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"fff0\", ATTR{idProduct}==\"d009\", MODE=\"0666\"" > /etc/udev/rules.d/51-guidance.rules'
+2. Clone the repo to the catkin workspace source directory `catkin_ws/src` and then 
+	
+		cd ~/catkin_ws
+		catkin_make
+		rosrun guidance guidanceNode
+		rosrun guidance guidanceNodeTest
+
+# Documentation
+To reduce the size of this package, we omit all documents. 
+
+- For getting started, please refer to [Developer Guide](https://developer.dji.com/guidance-sdk/documentation/application-development-guides/index.html).
+- For detailed API documentation, please refer to [Guidance_SDK_API](https://developer.dji.com/guidance-sdk/documentation/introduction/index.html).
+
+# Using ROS tools for calibration and stereo processing
+(experimental node by [@madratman](https://github.com/madratman/). Ideal would be using [camera_info_manager](http://wiki.ros.org/camera_info_manager) on the lines on [camera1394stereo](http://wiki.ros.org/camera1394stereo))
+
+
+- Look inside `/calibration_files`. A sample file for one stereo pair is provided. 
+ROS image pipeline needs a `camera_info` msg which consists of the calibration parameters. 
+`guidanceNodeCalibration` is an experimental node that parses the calibration params from the YAMLs in the `/calibration_files directory`, publishes on the `/guidance/right/camera_info` and `/guidance/left/camera_info` topics. 
+
+- First, you should calibrate using the [camera_calibration](http://wiki.ros.org/camera_calibration) package, and save the result to the left and right YAML in `/calibration_files` directory. 
+```
+roslaunch guidance load_calib_file.launch  
+(The launch file just sets a couple of parameters to retrieve the calibration files)
+
+rosrun guidance guidanceNodeCalibration  
+
+ rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.108 right:=/guidance/right/image_raw left:=/guidance/left/image_raw right_camera:=/guidance/right left_camera:=/guidance/left --no-service-check
+```        
+- Follow the calibration tutorials [here](http://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration) and [here](http://wiki.ros.org/camera_calibration/Tutorials/StereoCalibration)   
+If you are unable to save the calibration file using the GUI, you can do it manually from the terminal output. A reference for the same is provided in the sample `/calibration_files/raw_from_terminal` file. 
+ 
+- Alternatively if you don't want to recalibrate, you can also manually enter the current calibration params in the YAML, which you would have from using the DJI Windows utility for Guidance. The same is printed out in the terminal from either node - the official `guidanceNode` or the experimental `guidanceNodeCalibration`.  
+
+- Now that calibration is done, or you chose to use enter the pre-existing params in the YAMLs, we can use `stereo_image_proc` and play around to view and improve the disparity and point cloud in RViz.   
+We can use the dynamic reconfigure GUI to change the stereo algo used and its params as explained in [this tutorial](http://wiki.ros.org/stereo_image_proc/Tutorials/ChoosingGoodStereoParameters). 
+
+`ROS_NAMESPACE=guidance rosrun stereo_image_proc stereo_image_proc _approximate_sync:=True`   
+`rosrun image_view stereo_view stereo:=guidance image:=image_rect_color`   
+`rosrun rqt_reconfigure rqt_reconfigure `     
+`rosrun rviz rviz ` Change frame to "guidance". Add published point cloud pc2.
