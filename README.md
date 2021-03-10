@@ -51,9 +51,9 @@ Tested and run with opencv 4.2.0 (should work with opencv > 3.3)
 
 ## Instal DJI SDK
 
-Clone repository branch 3.9
+Clone repository branch 
 
-`git clone -b 3.9 https://github.com/dji-sdk/Onboard-SDK.git`
+`git clone https://github.com/dji-sdk/Onboard-SDK.git`
 
 Compile and install 
 
@@ -65,7 +65,21 @@ Compile and install
 
 `make`
 
-`sudo make install`
+`sudo make -j7 install`
+
+nema-comms
+$sudo apt install ros-{release}-nmea-comms
+
+note:we only test on kinetic,but it should be support on other version.
+
+ffmpeg
+$sudo apt install ffmpeg
+
+libusb-1.0-0-dev
+$sudo apt install libusb-1.0-0-dev
+
+libsdl2-dev
+$sudo apt install libsdl2-dev
 
 `sudo ldconfig`
 
@@ -89,16 +103,10 @@ Log in and out and DJI SDK is ready to go
 
 `source ~/.bashrc`
 
-## Install Guidance
+## Install OpenCV
 
-`cd ~/ROS/DJI_OSDK_ws/src`
-
-`git clone https://github.com/AnandaNN/Guidance-SDK-ROS.git`
-
-`sudo sh -c 'echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"fff0\", ATTR{idProduct}==\"d009\", MODE=\"0666\"" > /etc/udev/rules.d/51-guidance.rules'`
-
-`catkin build` Needs to be run a couple of times before it compiles (Something with the message generation)
-
+opencv3.x
+We use OpenCV to show images from camera stream. Download and install instructions can be found at: http://opencv.org. Tested with OpenCV 3.3.0.Suggest using 3.3.0+.
 
 ## Fixing usb cam
 
@@ -126,5 +134,29 @@ Add the file: `49-teensy.rules` to the udev folder : `/etc/udev/rules.d/` and ad
 `pip install scikit-image`
 
 
-## 
+## Edit the launch file and enter your App ID, Key, Baudrate and Port name in the designated places.
+(note:there are two launch file.
+dji_sdk_node.launch is for dji_sdk_node.(3.8.1's interface)
+dji_vehicle_node is for dji_vehicle_node(4.1.0's interface))
 
+$rosed dji_osdk_ros dji_sdk_node.launch
+$rosed dji_osdk_ros dji_vehicle_node.launch
+
+## Remember to add UserConfig.txt to correct path.(in the current work directory)
+
+## If you want to run dji_sdk_node.launch, you need to put UserConfig.txt into /home/{user}/.ros. dji_vehicle_node.launch does not need UserConfig.txt.
+
+## Running the Samples
+1.Start up the dji_osdk_ros ROS node.
+if you want to use OSDK ROS 4.1.0's services and topics:
+
+$roslaunch dji_osdk_ros dji_vehicle_node.launch
+
+if you want to adapt to OSDK ROS 3.8.1's services and topics:
+
+$roslaunch dji_osdk_ros dji_sdk_node.launch
+
+2.Open up another terminal and cd to your catkin_ws location, and start up a sample (e.g. flight control sample).
+
+$source devel/setup.bash
+$rosrun dji_osdk_ros flight_control_node
