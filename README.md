@@ -3,7 +3,7 @@ This repository is a work for the RAPID project at CRIS LAB.
 
 # Installing and running (Ubuntu 16.04)
 
-## Install ROS Kinetic
+## Install ROS Kinetic & DJI ROS SDK
 [http://wiki.ros.org/kinetic/Installation/Ubuntu]
 
 'sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -122,9 +122,9 @@ dji_vehicle_node is for dji_vehicle_node(4.1.0's interface))
 $rosed dji_osdk_ros dji_sdk_node.launch
 $rosed dji_osdk_ros dji_vehicle_node.launch
 
-## Remember to add UserConfig.txt to correct path.(in the current work directory)
+Remember to add UserConfig.txt to correct path.(in the current work directory)
 
-## If you want to run dji_sdk_node.launch, you need to put UserConfig.txt into /home/{user}/.ros. dji_vehicle_node.launch does not need UserConfig.txt.
+If you want to run dji_sdk_node.launch, you need to put UserConfig.txt into /home/{user}/.ros. dji_vehicle_node.launch does not need UserConfig.txt.
 
 ## Running the Samples
 1.Start up the dji_osdk_ros ROS node.
